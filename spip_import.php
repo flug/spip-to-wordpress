@@ -6,7 +6,7 @@ Plugin URI: http://marc-lemay.com
 Description: Import Spip blog (posts and comments)
 Author: Marc LEMAY
 Version: 1.0
-Author URI: http://marc-lemay.com
+Author URI: http://twitter.com/flug
 */
 
 //Your serveur infos here
