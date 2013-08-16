@@ -116,28 +116,6 @@ if (empty($_POST['do_cat'])) {
 				$slugs[]=$row->url;
 
 
-
-/*
-				$sqlcat =  "SELECT * FROM spip_rubriques WHERE id_rubrique = ".$row->id_rubrique; 
-//echo $sqlcat .'<br/>'; 
-					$resultcam=mysql_query($sqlcat,$this->spip_myid);
-					while($raw=mysql_fetch_object($resultcam)){
-						if (!empty($raw->descriptif)) {
-								$data =  array('description'=>$raw->descriptif, 
-									/*   'parent' => $raw->id_parent*/
-						/*	); 
-						}else
-						{
-							$data = array(); 
-						}
-					
-					//	var_dump($data); 
-				//	$idcat = wp_insert_term($raw->titre, 'category', $data); 
-				//	var_dump($idcat); 
-						echo '<p>Insert cat : ' .$raw->titre . ' ' .$idcat['term_id'] .'</p>'; 
-					}*/
-
-				
 				if(isset($this->cat[$row->id_rubrique])) $ncat=array($this->cat[$row->id_rubrique]); else $ncat=array();
 				if(empty($ncat)) $ncat=array();
 				
@@ -153,6 +131,7 @@ if (empty($_POST['do_cat'])) {
 					, 'post_status' => 'publish'
 					, 'post_author' => '1'
 				);
+			
 				//http://codex.wordpress.org/Function_Reference/wp_insert_post
 				$ID=wp_insert_post($data);
 				
@@ -265,5 +244,3 @@ function spip_menu(){
 	$spip=new spip();
 	$spip->menu();
 }
-
-?>
