@@ -7,7 +7,7 @@ Description: Import Spip blog (posts and comments)
 Author: Marc LEMAY
 Version: 1.0
 Author URI: http://twitter.com/flug
-*/
+ */
 
 //Your serveur infos here
 define('SPIP_HOST', '');
@@ -39,22 +39,22 @@ class spip{
 		}
 		return $links;
 	}
-	
+
 	function menu() {
 		global $wpdb;
 		echo "<div class='wrap'>";
 		echo '<h2>Spip import</h2>';
 		echo '<p>Import a Spip blog.</p>';
-		
+
 		if(!$this->connect()){
 			echo ("<p>Problème de connection ".mysql_error())."</p>";
 			echo ("<p>Edit the plugin to insert your spip database parameter.</p>");
 			echo '</div>';
 			return;
 		}
-		
-if (empty($_POST['do_cat'])) {
-	echo '<ol style="list-style-type:decimal">';
+
+		if (empty($_POST['do_cat'])) {
+			echo '<ol style="list-style-type:decimal">';
 			echo '<li>Desactive all plugins</li>';
 			echo '<li>Your spip dabase must differt from de WP one.</li>';
 			echo '<li>Configure your permalinks to match the old spip one.</li>';
@@ -63,25 +63,25 @@ if (empty($_POST['do_cat'])) {
 			echo '<form method="post">';
 			echo '<input type="submit" name="do_cat" value="Import Cat" / ></p>';
 			echo '</form>';
-}else
-{
-		$sqlcat =  "SELECT * FROM spip_rubriques ORDER BY id_rubrique ASC"; 
-//echo $sqlcat .'<br/>'; 
-					$resultcam=mysql_query($sqlcat,$this->spip_myid);
-					while($raw=mysql_fetch_object($resultcam)){
-						
-								$data =  array('description'=>$raw->descriptif, 
-									'term_id' =>$raw->id_rubrique
-									/*   'parent' => $raw->id_parent*/
-							); 
-						
-					//	var_dump($data); 
-					$idcat = wp_insert_term($raw->titre, 'category', $data); 
-				//	var_dump($idcat); 
-				//	echo '<p>Insert cat : ' .$raw->titre . ' ' .$raw->id_rubrique .'</p>'; 
-					}
+		}else
+		{
+			$sqlcat =  "SELECT * FROM spip_rubriques ORDER BY id_rubrique ASC";
+			//echo $sqlcat .'<br/>';
+			$resultcam=mysql_query($sqlcat,$this->spip_myid);
+			while($raw=mysql_fetch_object($resultcam)){
 
-}
+				$data =  array('description'=>$raw->descriptif,
+					'term_id' =>$raw->id_rubrique
+					/*   'parent' => $raw->id_parent*/
+				);
+
+				//	public_dump($data);
+				$idcat = wp_insert_term($raw->titre, 'category', $data);
+				//	public_dump($idcat);
+				//	echo '<p>Insert cat : ' .$raw->titre . ' ' .$raw->id_rubrique .'</p>';
+			}
+
+		}
 
 
 		if(empty($_POST['do_ok'])){
@@ -98,9 +98,9 @@ if (empty($_POST['do_cat'])) {
 		}else{
 
 			//Import
-			
+
 			$slugs=array();	//Mem old url
-			
+
 			$sql="SELECT * FROM spip_articles,spip_urls WHERE type='article' AND id_article=id_objet";
 			//$sql.=" AND id_article=1028";
 			$result=mysql_query($sql,$this->spip_myid);
@@ -108,17 +108,17 @@ if (empty($_POST['do_cat'])) {
 				echo mysql_error().'</div>';
 				return;
 			}
-			$idcat['term_id'] = 0 ; 
+			$idcat['term_id'] = 0 ;
 			while($row=mysql_fetch_object($result)){
- 
-				
+
+
 
 				$slugs[]=$row->url;
 
 
 				if(isset($this->cat[$row->id_rubrique])) $ncat=array($this->cat[$row->id_rubrique]); else $ncat=array();
 				if(empty($ncat)) $ncat=array();
-				
+
 				//echo(htmlentities($row->texte));
 				$data = array(
 					'post_content' => $this->post_format(trim($row->chapo. "".$row->texte))
@@ -131,13 +131,13 @@ if (empty($_POST['do_cat'])) {
 					, 'post_status' => 'publish'
 					, 'post_author' => '1'
 				);
-			
+
 				//http://codex.wordpress.org/Function_Reference/wp_insert_post
 				$ID=wp_insert_post($data);
-				
+
 				echo '<p>Insert: '.$row->titre." ".$ID."</p>";
 				//echo($this->post_format($row->texte));
-				
+
 				//Comments
 				if($ID>0){
 					$c=0;
@@ -159,16 +159,16 @@ if (empty($_POST['do_cat'])) {
 							, 'comment_parent' => '0'
 							, 'comment_approved' => '1'
 							, 'user_ID' => ''
-						);						
+						);
 						//wp_new_comment($data);
 						wp_insert_comment($data);
-						
-						$c++;				
+
+						$c++;
 					}
 				}
-								
+
 			}
-			
+
 			//htaccess
 			echo '<h3>htaccess</h3>';
 			echo '<p>Cut and paste this code at the top of the file</p>';
@@ -180,26 +180,26 @@ if (empty($_POST['do_cat'])) {
 			}
 			echo "# END spip redirect\n";
 			echo '</pre>';
-						
+
 		}
-				
+
 		echo '</div>';
 	}
 
 	function connect(){
-			$this->spip_myid=mysql_connect(SPIP_HOST,SPIP_USER,SPIP_PSW);
-			
-			if($this->spip_myid==false){
-				return false;
-			}
-			if(mysql_select_db(SPIP_BASE,$this->spip_myid)){
-				echo "<p>Connexion ".SPIP_BASE." OK</p>";
-				return true;
-			}else{
-				return false;
-			}
+		$this->spip_myid=mysql_connect(SPIP_HOST,SPIP_USER,SPIP_PSW);
+
+		if($this->spip_myid==false){
+			return false;
+		}
+		if(mysql_select_db(SPIP_BASE,$this->spip_myid)){
+			echo "<p>Connexion ".SPIP_BASE." OK</p>";
+			return true;
+		}else{
+			return false;
+		}
 	}
-	
+
 	function post_format($msg){
 		global $wpdb;
 		$msg=preg_replace('/\[([^->]*?)\]/is','<em>($1)</em>',$msg);
@@ -213,15 +213,15 @@ if (empty($_POST['do_cat'])) {
 		$msg=str_replace("]]","</em>)",$msg);
 		$msg=str_replace("<quote>","<blockquote>",$msg);
 		$msg=str_replace("</quote>","</blockquote>",$msg);
-		$msg=preg_replace('/\[(.*?)->(.*?)\]/is','<a href="$2">$1</a>',$msg);				
+		$msg=preg_replace('/\[(.*?)->(.*?)\]/is','<a href="$2">$1</a>',$msg);
 		return $wpdb->escape($msg);
 	}
-	
+
 	function test(){
 		$msg="toto plus de liens vers son propre blog. [On peut relever, en effet, que Nicolas Carr vient de publier son livre « The Shallows : What the Internet Is Doing to Our Brains », pour lequel il est actuellement en période de promotion. :o) ] zoro [la conférence Lift10->http://www.liftconference.com/fr/lift-france-10/home_fr] titi ouverture des données publiques (cf. [le programme¤http://www.liftconference.com/toto]). Le thème soulève l’enthous";
 		echo($msg."<br><br>");
 		$msg=preg_replace('/\[([^->]*?)\]/is','<em>($1)</em>',$msg);
-		$msg=preg_replace('/\[(.*?)->(.*?)\]/is','<a href="$2">$1</a>',$msg);				
+		$msg=preg_replace('/\[(.*?)->(.*?)\]/is','<a href="$2">$1</a>',$msg);
 		echo($msg."<br><br>");
 		echo(htmlentities($msg));
 	}
@@ -234,10 +234,10 @@ function spip_admin_menu() {
 }
 
 add_filter('plugin_action_links_'.plugin_basename(__FILE__),"spip_addConfigureLink", 10, 2);
-function spip_addConfigureLink($links) { 
+function spip_addConfigureLink($links) {
 	$link = '<a href="tools.php?page=spip_import.php">' . __('Settings') . '</a>';
-	array_unshift( $links, $link ); 
-	return $links; 
+	array_unshift( $links, $link );
+	return $links;
 }
 
 function spip_menu(){
