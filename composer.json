@@ -1,0 +1,16 @@
+{
+    "name": "clooder/spip-to-wordpres",
+    "description": "Plugins for migrate spip to wordpress",
+    "license": "MIT",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "Flug",
+            "email": "flugv1@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+
+    }
+}
