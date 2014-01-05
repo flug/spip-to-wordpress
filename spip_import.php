@@ -47,7 +47,7 @@ class spip{
 		echo '<p>Import a Spip blog.</p>';
 
 		if(!$this->connect()){
-			echo ("<p>Problème de connection ".mysql_error())."</p>";
+			echo ("<p>Connection failed ".mysql_error())."</p>";
 			echo ("<p>Edit the plugin to insert your spip database parameter.</p>");
 			echo '</div>';
 			return;
